@@ -6,18 +6,18 @@ import tempfile
 import os
 from PIL import Image
 
-IS_CLOUD = True
-# IS_CLOUD = "STREAMLIT_RUNTIME" in os.environ
+# IS_CLOUD = True
+IS_CLOUD = "STREAMLIT_RUNTIME" in os.environ
 
-# ✅ Add the zoom CSS
-st.markdown("""
-<style>
-body {
-    zoom: 0.9;  /* Slight zoom effect */
-    transform-origin: 0 0;
-}
-</style>
-""", unsafe_allow_html=True)
+# # ✅ Add the zoom CSS
+# st.markdown("""
+# <style>
+# body {
+#     zoom: 0.9;  /* Slight zoom effect */
+#     transform-origin: 0 0;
+# }
+# </style>
+# """, unsafe_allow_html=True)
 
 # Page configuration
 st.set_page_config(page_title="Fire Detection System", page_icon="🔥", layout="wide", initial_sidebar_state="expanded")
