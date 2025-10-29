@@ -6,6 +6,3 @@ headless = true
 
 [theme]
 base="light"
-
-[layout]
-wide = true

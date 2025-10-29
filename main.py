@@ -5,19 +5,11 @@ from ultralytics import YOLO
 import tempfile
 import os
 from PIL import Image
+import requests
+import base64
 
 IS_CLOUD = True
 # IS_CLOUD = "STREAMLIT_RUNTIME" in os.environ
-
-# ✅ Add the zoom CSS
-st.markdown("""
-<style>
-body {
-    zoom: 0.9;  /* Slight zoom effect */
-    transform-origin: 0 0;
-}
-</style>
-""", unsafe_allow_html=True)
 
 # Page configuration
 st.set_page_config(page_title="Fire Detection System", page_icon="🔥", layout="wide", initial_sidebar_state="expanded")
@@ -75,12 +67,72 @@ with st.sidebar:
     confidence_threshold = st.slider("**Confidence Threshold**", 0.0, 1.0, 0.5, 0.05)
 
     uploaded_files = None
+
+    # Your GitHub blob links (we'll auto-convert them to raw links)
+    DEMO_VIDEO_URL = "https://github.com/travelmateen/fire-detection/blob/main/fire.mp4"
+    DEMO_IMAGE_URL = "https://github.com/travelmateen/fire-detection/blob/main/demo.jpg"
+
+
+    def to_raw_url(github_blob_url: str) -> str:
+        """Convert a GitHub blob URL to a raw.githubusercontent.com URL."""
+        return github_blob_url.replace("github.com/", "raw.githubusercontent.com/").replace("/blob/", "/")
+
+
+    @st.cache_data
+    def load_demo_file(url):
+        """Fetch binary file content from GitHub raw link."""
+        r = requests.get(url)
+        r.raise_for_status()
+        return r.content
+
+
+    def make_download_link(data_bytes, filename, link_text):
+        """Create a clickable '(demo file)' link that downloads directly."""
+        b64 = base64.b64encode(data_bytes).decode()
+        href = f'<a href="data:file/octet-stream;base64,{b64}" download="{filename}" style="color:#1E90FF; text-decoration:none; font-weight:500;">{link_text}</a>'
+        return href
+
+
+    # Convert your GitHub links to raw versions
+    raw_video_url = to_raw_url(DEMO_VIDEO_URL)
+    raw_image_url = to_raw_url(DEMO_IMAGE_URL)
+
+    # Load both demo files
+    video_bytes = load_demo_file(raw_video_url)
+    image_bytes = load_demo_file(raw_image_url)
+
     if source == "Video":
-        uploaded_files = st.file_uploader("**Choose a video file**", type=['mp4', 'avi', 'mov', 'mkv'],
-                                          accept_multiple_files=False)
+        # Video upload section
+        video_link = make_download_link(video_bytes, "demo_video.mp4", "(demo file)")
+        st.markdown(
+            f"""<div style='display:flex;align-items:center;gap:4px;'>
+                    <strong>Choose a video file</strong> {video_link}
+                </div>""",
+            unsafe_allow_html=True
+        )
+        uploaded_files = st.file_uploader(
+            label="Choose a video file",
+            type=['mp4', 'avi', 'mov', 'mkv'],
+            accept_multiple_files=False,
+            label_visibility="collapsed"
+        )
+
     elif source == "Image":
-        uploaded_files = st.file_uploader("**Choose image files**", type=['jpg', 'jpeg', 'png', 'bmp'],
-                                          accept_multiple_files=True)
+        # Image upload section
+        image_link = make_download_link(image_bytes, "demo_image.jpg", "(demo file)")
+        st.markdown(
+            f"""<div style='display:flex;align-items:center;gap:0px;margin-top:1rem;'>
+                    <strong>Choose image files</strong> {image_link}
+                </div>""",
+            unsafe_allow_html=True
+        )
+
+        uploaded_files = st.file_uploader(
+            label="Choose image files",
+            type=['jpg', 'jpeg', 'png', 'bmp'],
+            accept_multiple_files=True,
+            label_visibility="collapsed"
+        )
 
     alert_threshold = st.slider("**Alert Threshold**", 0.0, 1.0, 0.7, 0.05)
     enable_alerts, show_stats = st.columns(2)
@@ -378,7 +430,11 @@ elif source == "Image" and uploaded_files is not None and len(uploaded_files) > 
 
 elif source == "Webcam":
     st.markdown("### Live Webcam Fire Detection")
-    if st.session_state.run_webcam:
+
+    if IS_CLOUD:
+        st.error("❌ Could not access webcam.")
+
+    elif st.session_state.run_webcam:
         cap = cv2.VideoCapture(0)
         if not cap.isOpened():
             st.error("❌ Could not access webcam.")
