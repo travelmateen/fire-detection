@@ -1,84 +1,95 @@
 # Fire Detection System
 
-This project provides real-time fire detection using a YOLO model trained on a small custom dataset. It supports video files, webcam streams, and image uploads. The application is built with Streamlit and runs directly on the web for easy access and testing.
+This project provides real-time fire detection using a YOLO model trained on a small custom dataset. The application runs entirely on the web using Streamlit and supports image uploads, video files, and webcam input. A warning alert is displayed whenever fire is detected. Demo media files are included for testing.
 
 Live App:
 [https://fire-detections.streamlit.app/](https://fire-detections.streamlit.app/)
 
 ## Features
 
-### YOLO-Based Detection
+### YOLO Fire Detection
 
-* Uses a YOLO model fine-tuned on a small fire dataset.
-* Detects fire regions in real time.
-* Works on images, videos, and webcam input.
+* Uses a YOLO model (`fire_model.pt`) fine-tuned on a small fire dataset.
+* Detects fire in real time across images, videos, and webcam streams.
+* Output includes bounding boxes and confidence scores.
 
 ### Streamlit Web Interface
 
-* Simple and responsive UI.
-* Upload images or videos for instant inference.
-* Option to use a live webcam feed.
-* Displays bounding boxes and detection confidence.
+* Simple browser-based UI built with Streamlit.
+* Supports:
 
-### Warning and Alerts
+  * Uploading photos
+  * Uploading videos
+  * Running webcam detection
+* Automatically displays processed frames with detections.
 
-* Shows warning messages when fire is detected.
-* Highlights detected regions clearly.
-* Designed for fast decision-making and safety monitoring.
+### Warning Alerts
 
-### Demo Images
+* Shows an alert message when fire is detected.
+* Helps in quick decision-making and early monitoring.
 
-A set of images is available to quickly test the model's performance.
+### Demo Media Included
 
-Link:
-[https://fire-detections.streamlit.app/](https://fire-detections.streamlit.app/)
+You can test the app using the provided sample files:
+
+* `demo.jpg`
+* `fire.mp4`
+
+These allow quick evaluation of detection performance.
+
+## Project Structure
+
+```
+.devcontainer/            # Development container config (optional)
+streamlit/                # Additional Streamlit configurations (if any)
+README.md                 # Documentation
+demo.jpg                  # Sample test image
+fire.mp4                  # Sample test video
+fire_model.pt             # Trained YOLO fire detection model
+logo.png                  # Application/logo asset
+main.py                   # Main Streamlit application
+packages.txt              # System-level packages (for Streamlit Cloud/Spaces)
+requirements.txt          # Python dependencies
+```
 
 ## Tech Stack
 
 * Python
 * Streamlit
-* YOLO (fine-tuned on a small fire dataset)
-* OpenCV (video and image processing)
+* YOLO (fine-tuned model)
+* OpenCV for frame and video processing
 
 ## How It Works
 
-1. User uploads an image, video, or enables webcam mode.
-2. The frame is passed to the YOLO model for inference.
-3. Fire objects are detected and highlighted with bounding boxes.
-4. If fire is detected, a warning alert is displayed.
-5. Output is shown in the browser for real-time results.
+1. User uploads a photo/video or enables webcam mode.
+2. The media is processed frame-by-frame using the YOLO model.
+3. Detected fire regions are outlined with bounding boxes.
+4. If any fire is found, a visible warning alert is shown.
+5. Output is displayed on the web interface in real time.
 
-## Project Structure
+## Installation (Local)
 
 ```
-app/
- ├── streamlit_app.py     # Main application
-models/
- └── fire_yolo.pt         # Trained YOLO model
-utils/
- ├── detection.py         # Inference functions
- └── processing.py        # Frame/image utilities
-assets/
- └── demo_images/         # Test images
+pip install -r requirements.txt
+streamlit run main.py
 ```
 
 ## Use Cases
 
-* Home safety monitoring
-* Industrial fire detection
-* Surveillance systems
-* Research and dataset testing
-* Educational demonstrations
+* Home/office surveillance
+* Factory or warehouse monitoring
+* Early fire detection in remote environments
+* Research and educational demonstration
 
 ## Future Improvements
 
-* Larger dataset for stronger generalization
-* Smoke detection capabilities
-* Multi-camera monitoring
-* Notification system (SMS/Email)
-* Deployment container (Docker)
+* Larger dataset training for higher accuracy
+* Smoke detection support
+* Notification system (email/SMS/API alerts)
+* Faster model version (quantized/mobile)
+* Docker deployment
 
 ## Contributing
 
-Contributions and improvements are welcome.
-Feel free to open issues or submit pull requests.
+Contributions are welcome.
+Open an issue or submit a pull request for enhancements.
